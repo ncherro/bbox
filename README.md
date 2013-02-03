@@ -1,7 +1,7 @@
-# Bbox
+# BBox
 
 ## A HTTP client for [Mopidy](http://www.mopidy.com/)
 
-### Under development
+### Under heavy development
 
 Check back soon for more info.
