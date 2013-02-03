@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>BBox</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width">
+
+<link href='http://fonts.googleapis.com/css?family=Ubuntu:400,700' rel='stylesheet' type='text/css'>
+<link rel="stylesheet/less" type="text/css" href="/css/all.css.less">
+
+<script src="/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+<script src="/js/vendor/less-1.3.3.min.js"></script>
+
+</head>
+<body>
+<!--[if lt IE 7]><p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p><![endif]-->
+<div class="main-wrap">
+  <div class="layout">
+    <div class="header-container">
+      <header class="wrapper clearfix">
+        <div class="tracklist-controls">
+          <form action="" method="get" id="search" accept-charset="utf-8">
+            <input type="search" name="query" value="" placeholder="Search" />
+            <select name="context">
+              <option value="any">All</option>
+              <option value="artist">Artists</option>
+              <option value="album">Albums</option>
+              <option value="track">Tracks</option>
+            </select>
+            <div id="search-results"></div>
+          </form>
+        </div>
+        <div class="playback-controls">
+          <a id="prev" class="icon-backward" href="#"></a>
+          <a id="playpause" class="icon-pause" href="#"></a>
+          <a id="next" class="icon-forward" href="#"></a>
+        </div>
+        <div class="status">
+          <i id="status" class="icon-spinner" title="Connecting..."></i>
+        </div>
+        <div id="playback-info">
+          <div class="bg"><div class="bar"></div></div>
+          <p class="info">&nbsp;</p>
+        </div>
+      </header>
+    </div>
+    <div class="main-container">
+      <div class="main wrapper clearfix">
+        <ul id="tracklist"></ul>
+      </div> <!-- #main -->
+    </div> <!-- #main-container -->
+  </div>
+</div>
+<div class="footer-container">
+  <footer class="wrapper">
+    <a id="clear-tracklist" class="icon-remove" href="#" title="Clear the tracklist"></a>
+  </footer>
+</div>
+
+
+<!-- HANDLEBARS TEMPLATES TODO: precompile -->
+<script id="tracks-hbs" type="text/x-handlebars-template">
+{{#each tracks}}<li id="tlid-{{tlid}}">
+  <i class="icon-resize-vertical handle"></i>
+  <a href="#" data-tlid="{{tlid}}" data-uri="{{track.uri}}">{{{track.name}}}<span class="additional-info"> &nbsp;/&nbsp; {{{track.album.name}}} &nbsp;/&nbsp; {{{track.artists.0.name}}}</span></a>
+  <i class="icon-remove remove" data-tlid="{{tlid}}"></i>
+</li>{{/each}}
+</script>
+
+<script id="search-results-hbs" type="text/x-handlebars-template">
+<a href="#" class="icon-remove"></a>
+<div>
+  <h3 data-rel="spotify" class="on">Spotify ({{results.1.count}})</h3>
+  <h3 data-rel="filesystem">Filesystem ({{results.0.count}})</h3>
+</div>
+<div>
+  <h3 data-rel="artists">Artists</h3>
+  <h3 data-rel="albums" class="on">Albums</h3>
+  <h3 data-rel="tracks">Tracks</h3>
+</div>
+<div class="search-results">
+  <div class="spotify on">
+    <ul class="artists">{{#each results.1.artists}}<li><a href="#" title="Search for this artist">{{{name}}}</a></li>{{/each}}</ul>
+    <ul class="albums on">{{#each results.1.albums}}<li><a href="#" data-uri="{{uri}}" title="Add all tracks from this album">{{{name}}}</a> / {{{artists.0.name}}}{{/each}}</ul>
+    <ul class="tracks">{{#each results.1.tracks}}<li><a href="#" data-uri="{{uri}}" title="Add this track">{{{name}}}</a> / <a href="#" data-uri="{{{album.uri}}}" title="Add all tracks from this album">{{{album.name}}}</a> / {{{album.artists.0.name}}}</li>{{/each}}</ul>
+  </div>
+  <div class="filesystem">
+    <ul class="artists">{{#each results.0.artists}}<li><a href="#" title="Search for this artist">{{{name}}}</a></li>{{/each}}</ul>
+    <ul class="albums on">{{#each results.0.albums}}<li><a href="#" data-uri="{{uri}}" title="Add all tracks from this album">{{{name}}}</a></li>{{/each}}</ul>
+    <ul class="tracks">{{#each results.0.tracks}}<li><a href="#" data-uri="{{album.uri}}" title="Add this track">{{{album.name}}}</a> - <a href="#" data-uri="{{uri}}">{{{name}}}</a></li>{{/each}}</ul>
+  </div>
+</div>
+</script>
+
+<script id="track-info-hbs" type="text/x-handlebars-template">
+<span class="track">{{{track.name}}}</span> &nbsp;/&nbsp; {{{track.album.name}}} &nbsp;/&nbsp; {{{track.artists.0.name}}}
+</script>
+<!-- /HANDLEBARS TEMPLATES -->
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/vendor/jquery0.9.0.min.js"><\/script>')</script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
+<script src="/mopidy/mopidy.min.js"></script>
+<script src="/js/vendor/handlebars.js"></script><!-- NOTE: precompile and only use the runtime on production -->
+<script src="/js/vendor/bootstrap.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>
