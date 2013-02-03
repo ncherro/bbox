@@ -1,6 +1,6 @@
 # Bbox
 
-## A HTTP client for [mopidy](http://www.mopidy.com/)
+## A HTTP client for [Mopidy](http://www.mopidy.com/)
 
 ### Under development
 
