@@ -1,4 +1,4 @@
-//(function($) {
+(function($) {
 
   // 'globally' accessible variables
   var mopidy, socket, playback, tracklist, search,
@@ -72,6 +72,7 @@
       mopidy.library.search(params).then(search.handleResults, console.error);
     },
     handleResults: function(results) {
+      console.log("\n\nhandleResults", results, "\n\n");
       var i, $el;
       for (i in [0, 1]) {
         results[i].count = results[i].tracks ? results[i].tracks.length : i;
@@ -378,4 +379,4 @@
   }
   $(init); // start it up on document ready
 
-//})(jQuery);
+})(jQuery);
