@@ -56,6 +56,9 @@ a, #tracklist li {
   .tracklist-controls { float: left; }
   .playback-controls, .status { float: right;
     a { display: inline-block; width: 26px; font-size: 18px; text-align: center;
+      /* no transitions - too distracting */
+      -moz-transition: none; -ms-transition: none; -o-transition: none; -webkit-transition: none;
+      transition: color 0.15s ease-in;
       &:hover { font-size: 19px; }
       &.disabled { color: @gray; }
     }
