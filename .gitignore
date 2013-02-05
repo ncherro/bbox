@@ -26,5 +26,5 @@ Thumbs.db
 
 # Capistrano
 .rvmrc
-.Capfile
+Capfile
 /config/deploy.rb
