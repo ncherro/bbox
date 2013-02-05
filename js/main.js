@@ -1,7 +1,7 @@
 (function($) {
 
-  // 'globally' accessible variables
-  var mopidy, socket, playback, tracklist, search,
+  // globally accessible variables
+  var mopidy, socket, playback, tracklist, search, debug=true, booting=true,
     // handlebars templates
     tracks_template, search_results_template, track_info,
     // elements
@@ -19,7 +19,7 @@
         .tooltip({ placement: 'left' });
       tracklist.sync();
       mopidy.playback.getState().then(function(state) {
-        if (state == 'paused') {
+        if (state == 'paused' || state == 'stopped') {
           $controls.playpause.paused();
         } else {
           $controls.playpause.playing();
@@ -72,24 +72,21 @@
       mopidy.library.search(params).then(search.handleResults, console.error);
     },
     handleResults: function(results) {
-      console.log("\n\nhandleResults", results, "\n\n");
+      if (debug) console.log("\n\nhandleResults", results, "\n\n");
       var i, $el;
       for (i in [0, 1]) {
         results[i].count = results[i].tracks ? results[i].tracks.length : i;
         if (results[i].count == 200) results[i].count = '200+';
       }
-      $search_results.html(search_results_template({ results: results })).show();
+      $search_results.html(search_results_template({ results: results })).slideDown();
       $search_results.find('h3').click(function() {
         $el = $(this);
         $el.siblings().removeClass('on').end().addClass('on');
         $('.search-results .' + $el.data('rel')).siblings().removeClass('on').end().addClass('on');
       });
-      $search_results.find('.icon-remove').unbind('click').click(function(e) {
-        e.preventDefault();
-        $search_results.empty().hide();
-      });
+      $search_results.find('.icon-remove').unbind('click').click(search.clearResults);
       $search_results.find('.search-results a').click(tracklist.addTracksByURI);
-      // special case for artist links in results
+      // SPECIAL CASE for artist links in results
       // we don't want to add all tracks by an artist, so just run a search
       // based on the artist's name
       $search_results.find('.search-results .artists a').unbind('click').click(function(e) {
@@ -99,24 +96,17 @@
       });
       // tooltips
       $search_results.find('[title]').tooltip({ placement: 'right' });
+    },
+    clearResults: function(e) {
+      e.preventDefault();
+      $search_results.slideUp(function() {
+        $search_results.empty().hide();
+      });
+      $search_form.find('input[type="search"], select').val('');
     }
   };
 
   playback = {
-    ping_delay: 2000,
-    ping_int: null,
-    /*
-    stopPinging: function() {
-      window.clearInterval(playback.ping_int);
-      playback.ping_int = null;
-    },
-    startPinging: function() {
-      if (playback.ping_int == null) {
-        playback.pingTrackTime(); // start it off
-        playback.ping_int = window.setInterval(playback.pingTrackTime, 2000);
-      }
-    },
-   */
     current: null,
     prev: function(e) {
       e.preventDefault();
@@ -138,28 +128,41 @@
       mopidy.playback.next();
     },
     syncCurrentTrack: function() {
-      console.log("\n\nsyncCurrentTrack\n\n");
+      if (debug) console.log("\n\nsyncCurrentTrack\n\n");
       mopidy.playback.getCurrentTlTrack()
-        .then(playback.printCurrentTrackInfo, console.error);
+        .then(playback.printTrackInfo, console.error);
     },
-    printCurrentTrackInfo: function(data) {
-      console.log("\n\nprintCurrentTrackInfo\n\n", data);
+    printTrackInfo: function(data) {
+      if (debug) console.log("\n\nprintTrackInfo\n\n", data);
       playback.current = data.tl_track || data; // depends on what's calling this
-      console.log("\n\n\n", playback.current, "\n\n\n");
       $track_info.html(track_info_template(playback.current));
       tracklist.gotoCurrentTrack(playback.current.tlid);
+      if (booting) {
+        playback.pingTrackTime();
+        booting = false;
+      }
+    },
+    clearTrackInfo: function() {
+      if (debug) console.log("\n\nclearTrackInfo\n\n");
+      $track_info.html('&nbsp;');
     },
     pingTrackTime: function() {
       mopidy.playback.getTimePosition().then(playback.printTrackTime, console.error);
     },
-    printTrackTime: function(data) {
-      $progress.bar.width((data / playback.current.track.length * 100) + '%');
+    printTrackTime: function(time) {
+      $progress.bar.width((time / playback.current.track.length * 100) + '%');
+      // and set it moving
+      // NOTE: used to ping the server, every 2 seconds to set the time, but
+      // this seems like it might be a better solution
+      $progress.bar.stop().animate({
+        width: '100%',
+      }, (playback.current.track.length - time), 'linear');
     },
     handleSeeked: function(data) {
       // called when mopidy fires a 'seeked' event
       //playback.stopPinging();
       $progress.bar.width((data.time_position / playback.current.track.length * 100) + '%');
-      //playback.startPinging();
+      playback.pingTrackTime();
     },
     handleSeek: function(e) {
       // click handler for our progress bar
@@ -169,21 +172,27 @@
       mopidy.playback.seek(parseInt(to, 10));
     },
     handlePlaybackStarted: function(data) {
-      console.log("\n\nhandlePlaybackStarted\n\n", data);
-      playback.printCurrentTrackInfo(data);
+      if (debug) console.log("\n\nhandlePlaybackStarted\n\n", data);
+      playback.printTrackInfo(data);
       $progress.bar.width(0);
       $controls.playpause.playing();
     },
+    handlePlaybackEnded: function(data) {
+      if (debug) console.log("\n\nhandlePlaybackEnded\n\n", data);
+      playback.clearTrackInfo();
+      $progress.bar.width(0);
+      $controls.playpause.paused();
+    },
     handlePlaybackResumed: function(data) {
-      console.log("\n\nhandlePlaybackResumed\n\n", data);
+      if (debug) console.log("\n\nhandlePlaybackResumed\n\n", data);
       $controls.playpause.playing();
     },
     handlePlaybackPaused: function(data) {
-      console.log("\n\nhandlePlaybackPaused\n\n", data);
+      if (debug) console.log("\n\nhandlePlaybackPaused\n\n", data);
       $controls.playpause.paused();
     },
     handleVolumeChange: function(data) {
-      console.log("\n\nhandleVolumeChange\n\n", data);
+      if (debug) console.log("\n\nhandleVolumeChange\n\n", data);
     }
   };
 
@@ -197,7 +206,14 @@
         .then(tracklist.print, console.error);
     },
     print: function(tracks) {
-      console.log("\n\nprint\n\n");
+      if (debug) console.log("\n\nprint\n\n");
+      if (tracks.length == 0) {
+        $controls.playpause.paused();
+        $controls.playpause.disable();
+        $containers.tracklist.empty();
+        return;
+      }
+      $controls.playpause.enable();
       $containers.tracklist.html(tracks_template({ tracks: tracks }));
       // add an 'on' class to the current track
       playback.syncCurrentTrack();
@@ -206,7 +222,7 @@
       $containers.tracklist.find('.icon-remove').click(tracklist.removeTrack);
       // add selectable / sortable functionality
       $containers.tracklist.selectable({
-          cancel: 'i,a',
+          cancel: 'i,a', // allows us to click these elements
           start: tracklist.resetSelectable,
           stop: function(event, ui) {
             var $wrapped, tlids;
@@ -221,6 +237,11 @@
             $containers.tracklist.sortable('destroy').sortable(tracklist.sortable_options);
           }
         }).sortable(tracklist.sortable_options);
+      // deselect when we click outside of the tracklist
+      $('.main-container').unbind('click').click(tracklist.resetSelectable);
+      $containers.tracklist.click(function(e) {
+        e.stopPropagation();
+      });
     },
     gotoCurrentTrack: function(tlid) {
       var scrolltop = $containers.tracklist.find('#tlid-' + tlid)
@@ -233,14 +254,15 @@
       }, 300);
     },
     resetSelectable: function() {
+      // this seems a lil dirty, but don't see a better way to do it in the
+      // jQuery UI docs
       $containers.tracklist.find('.wrapped > .handle, .wrapped > .remove-all').remove();
       $containers.tracklist.find('.wrapped li').unwrap().unwrap();
-      // TODO: fix the selectable / sortable stuff up
-      //$tracklist.find('.ui-selected').removeClass('ui-selected');
+      $containers.tracklist.find('.ui-selected').removeClass('ui-selected');
     },
     // click events
     playTrack: function(e) {
-      console.log("\n\nplayTrack\n\n");
+      if (debug) console.log("\n\nplayTrack\n\n");
       e.preventDefault();
       mopidy.tracklist.filter({ 'tlid': $(e.currentTarget).data('tlid') })
         .then(utilities.getFirst, console.error)
@@ -264,7 +286,7 @@
       };
     },
     clear: function(e) {
-      console.log("\n\nclear\n\n");
+      if (debug) console.log("\n\nclear\n\n");
       e.preventDefault();
       mopidy.playback.stop();
       mopidy.tracklist.clear();
@@ -274,6 +296,9 @@
       var uri = $(e.currentTarget).data('uri');
       mopidy.library.lookup(uri)
         .then(mopidy.tracklist.add, console.error);
+      if (uri.indexOf('spotify:album') == 0) {
+        search.clearResults(e);
+      }
     }
   };
 
@@ -341,18 +366,18 @@
 
     // special functionality for our playpause button
     $controls.playpause.paused = function() {
-      console.log("\n\nPAUSED\n\n");
+      if (debug) console.log("\n\npaused\n\n");
       this.removeClass('icon-pause').addClass('icon-play');
       $controls.prev.disable();
       $controls.next.disable();
-      //playback.stopPinging();
+      $progress.bar.stop();
     }
     $controls.playpause.playing = function() {
-      console.log("\n\nPLAYING\n\n");
+      if (debug) console.log("\n\nplaying\n\n");
       this.removeClass('icon-play').addClass('icon-pause');
       $controls.prev.enable();
       $controls.next.enable();
-      //playback.startPinging();
+      playback.pingTrackTime();
     }
 
     // search form
@@ -367,14 +392,17 @@
 
     // initialize mopidy
     mopidy = new Mopidy();
-    mopidy.on(console.log.bind(console)); // log all events
-    mopidy.on("event:tracklistChanged", tracklist.sync);
+    if (debug) mopidy.on(console.log.bind(console)); // log all events
     mopidy.on("state:online", socket.online);
     mopidy.on("state:offline", socket.offline);
+
+    mopidy.on("event:tracklistChanged", tracklist.sync);
     mopidy.on("event:trackPlaybackStarted", playback.handlePlaybackStarted);
+    mopidy.on("event:trackPlaybackEnded", playback.handlePlaybackEnded);
     mopidy.on("event:trackPlaybackPaused", playback.handlePlaybackPaused);
     mopidy.on("event:trackPlaybackResumed", playback.handlePlaybackResumed);
     mopidy.on("event:seeked", playback.handleSeeked);
+
     //mopidy.on("event:volumeChanged", playback.volumeChanged);
 
     $('[title]').tooltip();

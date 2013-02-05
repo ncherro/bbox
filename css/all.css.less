@@ -18,20 +18,29 @@ input[type="search"] { border: 1px solid @gray; -moz-border-radius: 15px; border
 a { text-decoration: none; color: @dark-gray;
   &:active { position: relative; top: 1px; }
 }
-/* a way to disable transitions temporarily on an element */
-.no-trans {
-  transition: none !important;
-  -moz-transition: none !important; /* Firefox 4 */
-  -webkit-transition: none !important; /* Safari and Chrome */
-  -o-transition: none !important; /* Opera */
+
+
+/* general transitions */
+a, #tracklist li {
+  -moz-transition: color 0.15s ease-in;
+  -ms-transition: color 0.15s ease-in;
+  -o-transition: color 0.15s ease-in;
+  -webkit-transition: color 0.15s ease-in;
+  transition: color 0.15s ease-in;
+  -o-transition-property:background-color, border-color, color, opacity;
+  -moz-transition-property:background-color, border-color, color, opacity;
+  -ms-transition-property:background-color, border-color, color, opacity;
+  -webkit-transition-property:background-color, border-color, color, opacity;
+  transition-property:background-color, border-color, color, opacity;
 }
+
 
 /* sticky footer */
 @footer-height: 60px;
 .main-wrap { min-height: 100%; }
 .layout { overflow: auto; padding-bottom: @footer-height; }
 .footer-container { margin-top: -@footer-height; height: @footer-height; clear: both;
-  .wrapper { padding: 0; line-height: @footer-height;
+  .wrapper { padding: 0 2px; line-height: @footer-height;
     .tooltip { line-height: 2; }
   }
 }
@@ -46,7 +55,8 @@ a { text-decoration: none; color: @dark-gray;
 .header-container { position: fixed; top: 0; left: 0; width: 100%; z-index: 10; padding: 20px 0 10px;
   .tracklist-controls { float: left; }
   .playback-controls, .status { float: right;
-    a { padding: 0 5px; font-size: 18px;
+    a { display: inline-block; width: 26px; font-size: 18px; text-align: center;
+      &:hover { font-size: 19px; }
       &.disabled { color: @gray; }
     }
   }
@@ -84,10 +94,13 @@ a { text-decoration: none; color: @dark-gray;
 
 #tracklist { padding: 0; margin: 0;
   .additional-info { font-size: 12px; color: @gray; }
-  .handle, .remove-all { cursor: pointer; padding: 0 5px; }
-  ul { padding: 0; margin: 0 0 0 34px; }
-  li { padding: 10px 0; margin: 0; list-style: none;
-    .remove { float: right; cursor: pointer; padding: 6px 5px 0 0; }
+  .handle, .remove-all, .remove { position: absolute; cursor: pointer; top: 50%; margin-top: -9px; z-index: 2; display: block; width: 26px;
+    &:hover { font-size: 20px; margin-top: -11px; }
+  }
+  .handle { left: 0; }
+  .remove, .remove-all { right: 0; }
+  ul { padding: 0; margin: 0 0 0 24px; }
+  li { padding: 10px 24px; margin: 0; list-style: none; position: relative;
     &:hover { background: @off-white; }
     &.on { background: @magenta; color: #fff;
       .additional-info { color: #fff; }
@@ -96,9 +109,7 @@ a { text-decoration: none; color: @dark-gray;
     &.ui-selecting { background: @off-white; }
     &.ui-selected, &.wrapped { background: @light-gray; }
     &.wrapped { padding: 0; position: relative;
-      > .handle, > .remove-all { position: absolute; top: 50%; left: 0; margin-top: -8px; }
-      > .remove-all { left: auto; right: 0; }
-      li {
+      li { padding: 10px 0;
         .handle, .remove { display: none; }
       }
     }
