@@ -23,3 +23,8 @@
 Icon?
 ehthumbs.db
 Thumbs.db
+
+# Capistrano
+.rvmrc
+.Capfile
+/config/deploy.rb
