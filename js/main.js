@@ -105,6 +105,7 @@
   playback = {
     ping_delay: 2000,
     ping_int: null,
+    /*
     stopPinging: function() {
       window.clearInterval(playback.ping_int);
       playback.ping_int = null;
@@ -115,6 +116,7 @@
         playback.ping_int = window.setInterval(playback.pingTrackTime, 2000);
       }
     },
+   */
     current: null,
     prev: function(e) {
       e.preventDefault();
@@ -155,9 +157,9 @@
     },
     handleSeeked: function(data) {
       // called when mopidy fires a 'seeked' event
-      playback.stopPinging();
-      $progress.bar.addClass('no-trans').width((data.time_position / playback.current.track.length * 100) + '%').removeClass('no-trans');
-      playback.startPinging();
+      //playback.stopPinging();
+      $progress.bar.width((data.time_position / playback.current.track.length * 100) + '%');
+      //playback.startPinging();
     },
     handleSeek: function(e) {
       // click handler for our progress bar
@@ -343,14 +345,14 @@
       this.removeClass('icon-pause').addClass('icon-play');
       $controls.prev.disable();
       $controls.next.disable();
-      playback.stopPinging();
+      //playback.stopPinging();
     }
     $controls.playpause.playing = function() {
       console.log("\n\nPLAYING\n\n");
       this.removeClass('icon-play').addClass('icon-pause');
       $controls.prev.enable();
       $controls.next.enable();
-      playback.startPinging();
+      //playback.startPinging();
     }
 
     // search form
