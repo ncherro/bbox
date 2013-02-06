@@ -6,7 +6,7 @@
     tracks_template, search_results_template, track_info, filemanager_template,
     // elements
     $body, $controls, $search_form, $containers, $track_info, $status,
-    $progress, $filemanager;
+    $progress, $filemanager, $manual_uri;
 
 
   // object literals (singletons)
@@ -41,6 +41,11 @@
     },
     message: function(str) {
       alert(str);
+    },
+    addByURI: function(e) {
+      e.preventDefault();
+      var uri = prompt("Enter a spotify URI or a path to the file you'd like to play");
+      if (uri) tracklist.addTracksByURI(uri);
     }
   };
 
@@ -406,6 +411,8 @@
     // filesystem icon
     $filemanager = $('#filemanager');
     $filemanager.click(filemanager.open);
+    $manual_uri = $('#manual-uri');
+    $manual_uri.click(filemanager.manual_uri);
 
     // set up our handlebars templates
     tracks_template = Handlebars.compile($('#tracks-hbs').html());
