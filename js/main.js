@@ -42,8 +42,7 @@
     message: function(str) {
       alert(str);
     },
-    addByURI: function(e) {
-      e.preventDefault();
+    addByURI: function() {
       var uri = prompt("Enter a spotify URI or a path to the file you'd like to play");
       if (uri) tracklist.addTracksByURI(uri);
     }
@@ -315,8 +314,13 @@
       mopidy.tracklist.clear();
     },
     addTracksByURI: function(e) {
-      e.preventDefault();
-      var uri = $(e.currentTarget).data('uri');
+      var uri;
+      if (typeof e === 'string') {
+        uri = e;
+      } else {
+        e.preventDefault();
+        uri = $(e.currentTarget).data('uri');
+      }
       mopidy.library.lookup(uri)
         .then(mopidy.tracklist.add, console.error);
       if (uri.indexOf('spotify:album') == 0) {
