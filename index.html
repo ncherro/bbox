@@ -103,7 +103,12 @@
 </script>
 
 <script id="filemanager-hbs" type="text/x-handlebars-template">
-<iframe id="filemanager-iframe" src="{{src}}" frameborder="0" width="{{width}}" height="{{height}}"></iframe>
+<div id="overlay">
+  <div class="content">
+    <i class="icon-remove"></i>
+    <iframe id="filemanager-iframe" src="{{src}}" frameborder="0" width="{{width}}" height="{{height}}"></iframe>
+  </div>
+</div>
 </script>
 <!-- /HANDLEBARS TEMPLATES -->
 
