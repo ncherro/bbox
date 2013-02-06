@@ -116,6 +116,11 @@
         height: 600,
         src: window.location.origin.split(':' + window.location.port).join('') + '/filemanager'
       }));
+      $('#overlay, #overlay .icon-remove').click(filemanager.close);
+    },
+    close: function(e) {
+      e.preventDefault();
+      $('#overlay').remove();
     }
   }
 
