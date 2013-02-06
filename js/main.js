@@ -114,7 +114,7 @@
       $body.prepend(filemanager_template({
         width: 800,
         height: 600,
-        src: window.location.origin + '/filemanager'
+        src: window.location.origin.split(':' + window.location.port).join('') + '/filemanager'
       }));
     }
   }
