@@ -3,10 +3,10 @@
   // globally accessible variables
   var mopidy, socket, playback, tracklist, search, debug=true, booting=true,
     // handlebars templates
-    tracks_template, search_results_template, track_info,
+    tracks_template, search_results_template, track_info, filemanager_template,
     // elements
     $body, $controls, $search_form, $containers, $track_info, $status,
-    $progress;
+    $progress, $filemanager;
 
 
   // object literals (singletons)
@@ -105,6 +105,19 @@
       $search_form.find('input[type="search"], select').val('');
     }
   };
+
+  filemanager = {
+    open: function(e) {
+      e.preventDefault();
+      // NOTE - the src does not include the port, since the filemanager runs
+      // on nginx (port 80)
+      $body.prepend(filemanager_template({
+        width: 800,
+        height: 600,
+        src: window.location.origin + '/filemanager'
+      }));
+    }
+  }
 
   playback = {
     current: null,
@@ -385,25 +398,31 @@
     $search_form.submit(search.submit);
     $search_results = $('#search-results');
 
+    // filesystem icon
+    $filemanager = $('#filemanager');
+    $filemanager.click(filemanager.open);
+
     // set up our handlebars templates
     tracks_template = Handlebars.compile($('#tracks-hbs').html());
     search_results_template = Handlebars.compile($('#search-results-hbs').html());
     track_info_template = Handlebars.compile($('#track-info-hbs').html());
+    filemanager_template = Handlebars.compile($('#filemanager-hbs').html());
 
     // initialize mopidy
-    mopidy = new Mopidy();
-    if (debug) mopidy.on(console.log.bind(console)); // log all events
-    mopidy.on("state:online", socket.online);
-    mopidy.on("state:offline", socket.offline);
+    if (typeof Mopidy !== 'undefined') {
+      mopidy = new Mopidy();
+      if (debug) mopidy.on(console.log.bind(console)); // log all events
+      mopidy.on("state:online", socket.online);
+      mopidy.on("state:offline", socket.offline);
 
-    mopidy.on("event:tracklistChanged", tracklist.sync);
-    mopidy.on("event:trackPlaybackStarted", playback.handlePlaybackStarted);
-    mopidy.on("event:trackPlaybackEnded", playback.handlePlaybackEnded);
-    mopidy.on("event:trackPlaybackPaused", playback.handlePlaybackPaused);
-    mopidy.on("event:trackPlaybackResumed", playback.handlePlaybackResumed);
-    mopidy.on("event:seeked", playback.handleSeeked);
-
-    //mopidy.on("event:volumeChanged", playback.volumeChanged);
+      mopidy.on("event:tracklistChanged", tracklist.sync);
+      mopidy.on("event:trackPlaybackStarted", playback.handlePlaybackStarted);
+      mopidy.on("event:trackPlaybackEnded", playback.handlePlaybackEnded);
+      mopidy.on("event:trackPlaybackPaused", playback.handlePlaybackPaused);
+      mopidy.on("event:trackPlaybackResumed", playback.handlePlaybackResumed);
+      mopidy.on("event:seeked", playback.handleSeeked);
+      //mopidy.on("event:volumeChanged", playback.volumeChanged);
+    }
 
     $('[title]').tooltip();
   }

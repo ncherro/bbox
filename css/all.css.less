@@ -1,5 +1,5 @@
-@import "variables.css.less";
 @import "normalize.css.less";
+@import "variables.css.less";
 @import "h5bp.css.less";
 @import "font-awesome.css.less";
 @import "bootstrap.css.less";
@@ -53,7 +53,8 @@ a, #tracklist li {
 }
 .main-container { padding-top: 106px; }
 .header-container { position: fixed; top: 0; left: 0; width: 100%; z-index: 10; padding: 20px 0 10px;
-  .tracklist-controls { float: left; }
+  .tracklist-controls, #filemanager { float: left; }
+  #filemanager { margin: 7px 0 0 20px; }
   .playback-controls, .status { float: right;
     a { display: inline-block; width: 26px; font-size: 18px; text-align: center;
       /* no transitions - too distracting */
