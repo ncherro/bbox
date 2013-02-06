@@ -412,7 +412,7 @@
     $filemanager = $('#filemanager');
     $filemanager.click(filemanager.open);
     $manual_uri = $('#manual-uri');
-    $manual_uri.click(utilites.addByURI);
+    $manual_uri.click(utilities.addByURI);
 
     // set up our handlebars templates
     tracks_template = Handlebars.compile($('#tracks-hbs').html());
