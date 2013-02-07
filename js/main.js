@@ -266,10 +266,10 @@
       });
     },
     gotoCurrentTrack: function(tlid) {
-      var scrolltop = $containers.tracklist.find('#tlid-' + tlid)
-        .siblings().removeClass('on').end()
-        .addClass('on').offset().top;
-      // 136 is the height of the header - might be better to get this value
+      var $cur = $containers.tracklist.find('#tlid-' + tlid);
+      if ($cur.siblings().length) $cur.siblings().removeClass('on');
+      var scrolltop = $cur.addClass('on').offset().top;
+      // 136 is the height of the header - probably better to get this value
       // dynamically
       $body.animate({
         scrollTop: (scrolltop - 136)
