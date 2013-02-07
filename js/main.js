@@ -113,6 +113,7 @@
   filemanager = {
     open: function(e) {
       e.preventDefault();
+      $filemanager.addClass('icon-folder-open-alt');
       // NOTE - the src does not include the port, since the filemanager runs
       // on nginx (port 80)
       $body.prepend(filemanager_template({
@@ -124,11 +125,17 @@
     },
     close: function(e) {
       e.preventDefault();
+      $filemanager.removeClass('icon-folder-open-alt');
       $('#overlay').remove();
     },
     syncTagCache: function(e) {
-      if (debug) console.log("\n\nsyncTagCache\n\n");
       e.preventDefault();
+      if ($sync_tag_cache.hasClass('icon-spinner')) return;
+      $sync_tag_cache.addClass('icon-spinner');
+      mopidy.library.refresh().then(filemanager.handleRefreshed, console.error);
+    },
+    handleRefreshed: function() {
+      $sync_tag_cache.removeClass('icon-spinner');
     }
   }
 
