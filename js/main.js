@@ -452,9 +452,9 @@
     }
 
     $('[title]').tooltip();
-    $('.filemanager-controls [title]').tooltip('destroy').tooltip({
+    $('.filemanager-controls a').tooltip('destroy').tooltip({
       placement: 'right'
-    })
+    });
   }
   $(init); // start it up on document ready
 
