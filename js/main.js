@@ -6,7 +6,7 @@
     tracks_template, search_results_template, track_info, filemanager_template,
     // elements
     $body, $controls, $search_form, $containers, $track_info, $status,
-    $progress, $filemanager, $manual_uri, $sync_tag_cache;
+    $progress, $filemanager, $sync_tag_cache;
 
 
   // object literals (singletons)
@@ -426,8 +426,6 @@
     // filesystem icon
     $filemanager = $('#filemanager');
     $filemanager.click(filemanager.open);
-    $manual_uri = $('#manual-uri');
-    $manual_uri.click(utilities.addByURI);
     $sync_tag_cache = $('#sync-tag-cache');
     $sync_tag_cache.click(filemanager.syncTagCache);
 
