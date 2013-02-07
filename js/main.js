@@ -1,4 +1,4 @@
-(function($) {
+//(function($) {
 
   // globally accessible variables
   var mopidy, socket, playback, tracklist, search, debug=true, booting=true,
@@ -6,7 +6,7 @@
     tracks_template, search_results_template, track_info, filemanager_template,
     // elements
     $body, $controls, $search_form, $containers, $track_info, $status,
-    $progress, $filemanager, $manual_uri;
+    $progress, $filemanager, $manual_uri, $sync_tag_cache;
 
 
   // object literals (singletons)
@@ -125,6 +125,10 @@
     close: function(e) {
       e.preventDefault();
       $('#overlay').remove();
+    },
+    syncTagCache: function(e) {
+      if (debug) console.log("\n\nsyncTagCache\n\n");
+      e.preventDefault();
     }
   }
 
@@ -417,6 +421,8 @@
     $filemanager.click(filemanager.open);
     $manual_uri = $('#manual-uri');
     $manual_uri.click(utilities.addByURI);
+    $sync_tag_cache = $('#sync-tag-cache');
+    $sync_tag_cache.click(filemanager.syncTagCache);
 
     // set up our handlebars templates
     tracks_template = Handlebars.compile($('#tracks-hbs').html());
@@ -444,4 +450,4 @@
   }
   $(init); // start it up on document ready
 
-})(jQuery);
+//})(jQuery);
