@@ -194,7 +194,7 @@
       // click handler for our volume bar
       e.preventDefault();
       var vol = ((e.pageX - $volume.wrap.offset().left) / $volume.wrap.width()) * 100;
-      setVolume(vol);
+      playback.setVolume(vol);
     },
     toggleVolume: function(e) {
       if (debug) console.log("\n\ntoggleVolume\n\n");
