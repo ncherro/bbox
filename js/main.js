@@ -451,7 +451,7 @@
         selector: '#volume .bar',
       }),
       btn: new control({
-        selector: '.volume-icon-off',
+        selector: '.icon-volume-off',
         click: playback.toggleVolume
       })
     };
