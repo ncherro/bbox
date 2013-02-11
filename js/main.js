@@ -207,8 +207,8 @@
         $volume.btn.addClass('icon-volume-up');
       }
     },
-    handleVolumeChanged: function(a, b, c) {
-      if (debug) console.log("\n\nhandleVolumeChanged\n\n", a, b, c);
+    handleVolumeChanged: function(data) {
+      $volume.bar.width(data.volume + '%');
     },
     printVolume: function(volume) {
       if (debug) console.log("\n\nprintVolume\n\n", volume);
