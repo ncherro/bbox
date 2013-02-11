@@ -211,6 +211,7 @@
     handleVolumeChanged: function(data) {
       playback.volume = data.volume;
       $volume.bar.width(data.volume + '%');
+      if (data.volume > 0) $volume.btn.removeClass('icon-volume-up');
     },
     printVolume: function(volume) {
       if (debug) console.log("\n\nprintVolume\n\n", volume);
