@@ -79,7 +79,13 @@ a, #tracklist li {
 }
 
 #volume { position: relative; display: inline-block; height: 10px; width: 100px; border: 2px solid @gray; margin-right: 10px;
-  .bar { position: absolute; top: 0; left: 0; background: darken(@dark-gray, 5%); width: 0; height: 100%; }
+  .bar { position: absolute; top: 0; left: 0; background: darken(@dark-gray, 5%); width: 0; height: 100%;
+    -ms-transition: width 0.15s ease-in;
+    -moz-transition: width 0.15s ease-in;
+    -o-transition: width 0.15s ease-in;
+    -webkit-transition: width 0.15s ease-in;
+    transition: width 0.15s ease-in;
+  }
 }
 
 #search-results { display: none; background: #fff; width: 500px; padding: 10px; margin-top: 5px; position: absolute; z-index: 10; color: @gray;
