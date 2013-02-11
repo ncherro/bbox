@@ -187,7 +187,7 @@
     },
     setVolume: function(volume) {
       if (debug) console.log("\n\nsetVolume\n\n");
-      mopidy.playback.setVolume(volume, 10));
+      mopidy.playback.setVolume(volume);
     },
     changeVolume: function(e) {
       if (debug) console.log("\n\nchangeVolume\n\n");
