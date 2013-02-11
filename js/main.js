@@ -6,7 +6,7 @@
     tracks_template, search_results_template, track_info, filemanager_template,
     // elements
     $body, $controls, $search_form, $containers, $track_info, $status,
-    $progress, $filemanager, $sync_tag_cache;
+    $progress, $volume_bar, $filemanager, $sync_tag_cache;
 
 
   // object literals (singletons)
@@ -178,6 +178,12 @@
     clearTrackInfo: function() {
       if (debug) console.log("\n\nclearTrackInfo\n\n");
       $track_info.html('&nbsp;');
+    },
+    getVolume: function() {
+      mopidy.playback.getVolume().then(printVolume, console.error);
+    },
+    printVolume: function(volume) {
+      $volume_bar.width(volume + '%');
     },
     pingTrackTime: function() {
       mopidy.playback.getTimePosition().then(playback.printTrackTime, console.error);
@@ -399,6 +405,7 @@
         click: playback.handleSeek
       })
     };
+    $volume_bar = $('#volume-bar .bar');
     $track_info = $('#playback-info .info');
     $status = $('#status');
 
