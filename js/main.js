@@ -194,7 +194,7 @@
       // click handler for our volume bar
       e.preventDefault();
       var vol = ((e.pageX - $volume.wrap.offset().left) / $volume.wrap.width()) * 100;
-      console.log(vol);
+      setVolume(vol);
     },
     toggleVolume: function(e) {
       if (debug) console.log("\n\ntoggleVolume\n\n");
@@ -206,6 +206,9 @@
         playback.setVolume(0);
         $volume.btn.addClass('icon-volume-up');
       }
+    },
+    handleVolumeChanged: function(a, b, c) {
+      if (debug) console.log("\n\nhandleVolumeChanged\n\n", a, b, c);
     },
     printVolume: function(volume) {
       if (debug) console.log("\n\nprintVolume\n\n", volume);
@@ -499,7 +502,7 @@
       mopidy.on("event:trackPlaybackPaused", playback.handlePlaybackPaused);
       mopidy.on("event:trackPlaybackResumed", playback.handlePlaybackResumed);
       mopidy.on("event:seeked", playback.handleSeeked);
-      mopidy.on("event:volumeChanged", playback.volumeChanged);
+      mopidy.on("event:volumeChanged", playback.handleVolumeChanged);
     }
 
     $('[title]').tooltip();
