@@ -141,7 +141,7 @@
   }
 
   playback = {
-    volume: null,
+    volume: 0,
     current: null,
     prev: function(e) {
       e.preventDefault();
@@ -209,15 +209,13 @@
       }
     },
     handleVolumeChanged: function(data) {
-      playback.volume = data.volume;
-      $volume.bar.width(data.volume + '%');
-      if (data.volume > 0) $volume.btn.removeClass('icon-volume-up');
+      playback.printVolume(data.volume);
     },
     printVolume: function(volume) {
       if (debug) console.log("\n\nprintVolume\n\n", volume);
-      playback.volume = volume;
       $volume.bar.width(volume + '%');
       if (volume > 0) {
+        playback.volume = volume;
         $volume.btn.removeClass('icon-volume-up');
       } else {
         $volume.btn.addClass('icon-volume-up');
@@ -267,9 +265,6 @@
     handlePlaybackPaused: function(data) {
       if (debug) console.log("\n\nhandlePlaybackPaused\n\n", data);
       $controls.playpause.paused();
-    },
-    handleVolumeChange: function(data) {
-      if (debug) console.log("\n\nhandleVolumeChange\n\n", data);
     }
   };
 
