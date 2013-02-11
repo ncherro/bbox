@@ -193,7 +193,7 @@
       if (debug) console.log("\n\nchangeVolume\n\n");
       // click handler for our volume bar
       e.preventDefault();
-      var vol = ((e.pageX - $volume.bar.offset().left) / $volume.bar.width()) * 100;
+      var vol = ((e.pageX - $volume.wrap.offset().left) / $volume.wrap.width()) * 100;
       console.log(vol);
     },
     toggleVolume: function(e) {
@@ -438,9 +438,12 @@
       })
     };
     $volume = {
+      wrap: new control({
+        selector: '#volume',
+        click: playback.changeVolume
+      }),
       bar: new control({
         selector: '#volume .bar',
-        click: playback.changeVolume
       }),
       btn: new control({
         selector: '.volume-icon-off',
