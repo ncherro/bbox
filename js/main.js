@@ -181,7 +181,7 @@
       $track_info.html('&nbsp;');
     },
     getVolume: function() {
-      mopidy.playback.getVolume().then(printVolume, console.error);
+      mopidy.playback.getVolume().then(playback.printVolume, console.error);
     },
     setVolume: function() {
       mopidy.playback.setVolume(parseInt($volume_bar.width(), 10));
