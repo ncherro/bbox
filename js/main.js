@@ -141,6 +141,7 @@
   }
 
   playback = {
+    volume: null,
     current: null,
     prev: function(e) {
       e.preventDefault();
@@ -181,13 +182,34 @@
       $track_info.html('&nbsp;');
     },
     getVolume: function() {
+      if (debug) console.log("\n\ngetVolume\n\n");
       mopidy.playback.getVolume().then(playback.printVolume, console.error);
     },
-    setVolume: function() {
-      mopidy.playback.setVolume(parseInt($volume.bar.width(), 10));
+    setVolume: function(volume) {
+      if (debug) console.log("\n\nsetVolume\n\n");
+      mopidy.playback.setVolume(volume, 10));
+    },
+    changeVolume: function(e) {
+      if (debug) console.log("\n\nchangeVolume\n\n");
+      // click handler for our volume bar
+      e.preventDefault();
+      var vol = ((e.pageX - $volume.bar.offset().left) / $volume.bar.width()) * 100;
+      console.log(vol);
+    },
+    toggleVolume: function(e) {
+      if (debug) console.log("\n\ntoggleVolume\n\n");
+      e.preventDefault();
+      if ($volume.btn.hasClass('icon-volume-up')) {
+        playback.setVolume(playback.volume);
+        $volume.btn.removeClass('icon-volume-up');
+      } else {
+        playback.setVolume(0);
+        $volume.btn.addClass('icon-volume-up');
+      }
     },
     printVolume: function(volume) {
       if (debug) console.log("\n\nprintVolume\n\n", volume);
+      playback.volume = volume;
       $volume.bar.width(volume + '%');
       if (volume > 0) {
         $volume.btn.removeClass('icon-volume-up');
@@ -416,8 +438,14 @@
       })
     };
     $volume = {
-      bar: $('#volume .bar'),
-      btn: $('.volume-icon-off')
+      bar: new control({
+        selector: '#volume .bar',
+        click: playback.changeVolume
+      }),
+      btn: new control({
+        selector: '.volume-icon-off',
+        click: playback.toggleVolume
+      })
     };
     $track_info = $('#playback-info .info');
     $status = $('#status');
@@ -468,7 +496,7 @@
       mopidy.on("event:trackPlaybackPaused", playback.handlePlaybackPaused);
       mopidy.on("event:trackPlaybackResumed", playback.handlePlaybackResumed);
       mopidy.on("event:seeked", playback.handleSeeked);
-      //mopidy.on("event:volumeChanged", playback.volumeChanged);
+      mopidy.on("event:volumeChanged", playback.volumeChanged);
     }
 
     $('[title]').tooltip();
