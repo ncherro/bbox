@@ -187,6 +187,7 @@
       mopidy.playback.setVolume(parseInt($volume_bar.width(), 10));
     },
     printVolume: function(volume) {
+      if (debug) console.log("\n\nprintVolume\n\n", volume);
       $volume_bar.width(volume + '%');
     },
     pingTrackTime: function() {
