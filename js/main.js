@@ -405,7 +405,7 @@
         click: playback.handleSeek
       })
     };
-    $volume_bar = $('#volume-bar .bar');
+    $volume_bar = $('#volume .bar');
     $track_info = $('#playback-info .info');
     $status = $('#status');
 
