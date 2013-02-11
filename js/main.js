@@ -208,6 +208,7 @@
       }
     },
     handleVolumeChanged: function(data) {
+      playback.volume = data.volume;
       $volume.bar.width(data.volume + '%');
     },
     printVolume: function(volume) {
