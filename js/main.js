@@ -24,6 +24,7 @@
         } else {
           $controls.playpause.playing();
         }
+        playback.getVolume();
       }, console.error);
     },
     offline: function() {
@@ -181,6 +182,9 @@
     },
     getVolume: function() {
       mopidy.playback.getVolume().then(printVolume, console.error);
+    },
+    setVolume: function() {
+      mopidy.playback.setVolume(parseInt($volume_bar.width(), 10));
     },
     printVolume: function(volume) {
       $volume_bar.width(volume + '%');
